@@ -1,6 +1,10 @@
 # === AUTO-INSTALL MODULES IF MISSING ===
 import subprocess
 import sys
+import os
+import random
+import string
+import csv
 
 def install(package):
     subprocess.check_call([sys.executable, "-m", "pip", "install", package])
@@ -19,16 +23,14 @@ except ImportError:
     install("faker")
     from faker import Faker
 
-import random
-import string
-import csv
-
 # === CONFIGURATION ===
-BOT_TOKEN = '7736427367:AAHJ-ZvcNVpt-vL65w1-Gjk3eHSb8fto31Y'  # Replace with your bot token
-CHANNEL_ID = '-1002044043990'  # Replace with your channel username or '-100...' format
+BOT_TOKEN = os.environ.get("BOT_TOKEN")
+CHANNEL_ID = os.environ.get("CHANNEL_ID", "-1002044043990")
 FILENAME = 'fake_data.csv'
 
-# === Initialize Faker ===
+if not BOT_TOKEN:
+    raise ValueError("BOT_TOKEN is not set. Please define it in Render environment variables.")
+
 fake = Faker()
 
 # === Ensure CSV Exists ===
@@ -61,17 +63,17 @@ def format_data(data):
         f"📱 *Mobile*: `{data['Mobile']}`\n"
         f"👤 *Full Name*: `{data['Full Name']}`\n"
         f"🏦 *Account No*: `{data['Account No']}`\n"
+        f"🏦 *Bank Name*: `State Bank of India`\n"
         f"🔢 *IFSC*: `{data['IFSC']}`\n"
-        f"🔐 *Password*: `{data['Password']}`"
+        f"🔐 *Password*: `{data['Password']}`\n"
+        "🧔‍♂️  Bot created by : @asthxggzc1"
     )
 
 # === Start Command ===
 def start(update: Update, context: CallbackContext):
     update.message.reply_text(
         "🤖 *Fake Data Generator Bot*\n\n"
-        "Use /generate to create fake data\n"
-        "Use /csv to get the complete CSV file\n"
-        "Data will also be posted to the channel",
+        "Use /generate to create fake data\n",
         parse_mode='Markdown'
     )
 
